@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Card} from './card.model';
 
 @model({settings: {strict: false}})
 export class Deck extends Entity {
@@ -22,6 +23,8 @@ export class Deck extends Entity {
   })
   remaining?: number;
 
+  @hasMany(() => Card)
+  cards: Card[];
   // Define well-known properties here
 
   // Indexer property to allow additional data
