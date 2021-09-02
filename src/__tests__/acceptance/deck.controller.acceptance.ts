@@ -78,11 +78,9 @@ describe('DeckController', () => {
 
     it('should return error for missing deck_id', async () => {
       const deckUUID = '';
-      const res = await client.get(`/decks/${deckUUID}`)
+      await client.get(`/decks/${deckUUID}`)
         .expect('Content-Type', /json/)
         .expect(404);
-
-      expect(res.body).to.be.empty();
     });
 
     it('should return error for invalid deck_id', async () => {

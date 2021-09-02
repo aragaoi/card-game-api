@@ -1,11 +1,6 @@
-// Uncomment these imports to begin using these cool features!
-
-// import {inject} from '@loopback/core';
-
-
 import {repository} from "@loopback/repository";
 import {DeckRepository} from "../repositories";
-import {post, requestBody, Response, RestBindings} from "@loopback/rest";
+import {post, get, requestBody, Response, RestBindings, param} from "@loopback/rest";
 import {Deck} from "../models";
 import {inject} from "@loopback/core";
 
@@ -19,10 +14,20 @@ export class DeckController {
   @post('/decks')
   async create(
     @requestBody() deck: Omit<Deck, 'deck_id'>
-  ): Promise<Deck | null> {
+  ): Promise<Deck> {
 
     const created = await this.deckRepository.create(deck);
     this.response.status(201);
     return created;
+  }
+
+  @get('/decks/{id}')
+  async get(
+    @param.path.string('id') deckId: string
+  ): Promise<Deck> {
+
+    const deck = await this.deckRepository.findById(deckId);
+    this.response.status(200);
+    return deck;
   }
 }
