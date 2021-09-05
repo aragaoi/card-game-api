@@ -85,13 +85,9 @@ describe('DeckController', () => {
 
     it('should return error for invalid deck_id', async () => {
       const deckUUID = 'abcd1234-qwert9876';
-      const res = await client.get(`/decks/${deckUUID}`)
+      await client.get(`/decks/${deckUUID}`)
         .expect('Content-Type', /json/)
-        .expect(400);
-
-      expect(res.body).to.be.equal({
-        error: 'The deck id should be a valid UUID.'
-      });
+        .expect(404);
     });
   });
 });
