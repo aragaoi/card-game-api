@@ -84,7 +84,7 @@ describe('CardController', () => {
         .expect('Content-Type', /json/)
         .expect(400);
 
-      expect(res.body).to.be.eql('The deck id should be a valid UUID.');
+      expect(res.body?.error?.message).to.be.eql('The deck id should be a valid UUID.');
     });
   });
 });
