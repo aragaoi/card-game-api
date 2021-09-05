@@ -28,7 +28,12 @@ export class DeckController {
   @get('/decks/{id}')
   async get(@param.path.string('id') deck_id: string): Promise<Deck> {
     const deck = await this.deckRepository.findById(deck_id, {
-      include: ['cards'],
+      include: [
+        {
+          relation: 'cards',
+          scope: {fields: ['value', 'suit', 'code', 'deck_id'], where: {drawn: false}},
+        },
+      ],
     });
     this.response.status(200);
     return deck;

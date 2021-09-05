@@ -24,12 +24,26 @@ export class CardController {
       amountToBeDraw,
       deck_id,
     );
+
+    await this.updateRemainingCardsOnDeck(deck_id, amountToBeDraw);
+
     this.response.status(200);
     return {
       cards: drawnCards.map(
         ({value, suit, code}) => new Card({value, suit, code}),
       ),
     };
+  }
+
+  private async updateRemainingCardsOnDeck(
+    deck_id: string,
+    amountToBeDraw: number,
+  ) {
+    const deck = await this.deckRepository.findById(deck_id);
+    const {remaining = 0} = deck;
+    deck.remaining =
+      remaining > amountToBeDraw ? remaining - amountToBeDraw : 0;
+    await this.deckRepository.update(deck);
   }
 
   private async validate(deck_id: string, amountToBeDraw: number) {

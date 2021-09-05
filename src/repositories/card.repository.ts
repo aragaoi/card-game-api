@@ -21,6 +21,7 @@ export class CardRepository extends DefaultCrudRepository<
         return this.update(new Card({...card, drawn: true}));
       }),
     );
+
     return cardsToBeDraw;
   }
 

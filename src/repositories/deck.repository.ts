@@ -26,7 +26,6 @@ export class DeckRepository extends DefaultCrudRepository<
 
   constructor(
     @inject('datasources.localdb') dataSource: LocaldbDataSource,
-    @repository(CardRepository) private cardRepository: CardRepository,
     @repository.getter('CardRepository')
     protected cardRepositoryGetter: Getter<CardRepository>,
   ) {
