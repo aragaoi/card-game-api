@@ -9,7 +9,7 @@ const buildCardDeck = (): Card[] => {
       cards.push(new Card({
         value,
         suit,
-        code: `${value[0]}${suit[0]}`
+        code: `${value.length > 2 ? value[0] : value}${suit[0]}` // use the 2 digits when value is 10
       }))
     })
   );

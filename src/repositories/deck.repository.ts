@@ -5,6 +5,8 @@ import {LocaldbDataSource} from '../datasources';
 import {Deck, DeckRelations, Card} from '../models';
 import {v4 as uuidv4} from 'uuid';
 import {CardRepository} from './card.repository';
+import {buildCardDeck} from "../helpers/card-type.helper";
+import {shuffle} from "../helpers/array.helper";
 
 export class DeckRepository extends DefaultCrudRepository<Deck,
   typeof Deck.prototype.deck_id,
@@ -14,7 +16,9 @@ export class DeckRepository extends DefaultCrudRepository<Deck,
   public readonly cards: HasManyRepositoryFactory<Card, typeof Deck.prototype.deck_id>;
 
   constructor(
-    @inject('datasources.localdb') dataSource: LocaldbDataSource, @repository.getter('CardRepository') protected cardRepositoryGetter: Getter<CardRepository>,
+    @inject('datasources.localdb') dataSource: LocaldbDataSource,
+    @repository(CardRepository) private cardRepository: CardRepository,
+    @repository.getter('CardRepository') protected cardRepositoryGetter: Getter<CardRepository>,
   ) {
     super(Deck, dataSource);
     this.cards = this.createHasManyRepositoryFactoryFor('cards', cardRepositoryGetter,);
@@ -25,13 +29,26 @@ export class DeckRepository extends DefaultCrudRepository<Deck,
     };
   }
 
-
   async create(deck: Omit<Deck, 'deck_id'> | undefined) {
     const filledDeck = {
       ...this.defaultDeckProps,
       ...deck,
       deck_id: deck?.deck_id ?? uuidv4()
     }
-    return super.create(filledDeck);
+    const createdDeck = await super.create(filledDeck);
+
+    await this.createDeckCards(createdDeck);
+    return createdDeck;
+  }
+
+  private async createDeckCards({deck_id, remaining, shuffled}: Deck) {
+    let cards = buildCardDeck();
+    if (shuffled) {
+      cards = shuffle(cards);
+    }
+    cards = cards.slice(0, remaining);
+    await Promise.all(
+      cards.map(card => this.cards(deck_id).create(card), this)
+    );
   }
 }

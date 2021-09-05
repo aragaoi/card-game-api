@@ -27,7 +27,7 @@ export class DeckController {
     @param.path.string('id') deck_id: string
   ): Promise<Deck> {
 
-    const deck = await this.deckRepository.findById(deck_id);
+    const deck = await this.deckRepository.findById(deck_id, {include: ['cards']});
     this.response.status(200);
     return deck;
   }
