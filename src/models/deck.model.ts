@@ -23,7 +23,7 @@ export class Deck extends Entity {
   })
   remaining?: number;
 
-  @hasMany(() => Card)
+  @hasMany(() => Card, {keyTo: 'deck_id'})
   cards: Card[];
   // Define well-known properties here
 

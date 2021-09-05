@@ -13,10 +13,10 @@ export class CardRepository extends DefaultCrudRepository<Card,
     super(Card, dataSource);
   }
 
-  async draw(amountToBeDraw: number, deckId: string): Promise<Card[]> {
-    
+  async draw(amountToBeDraw: number, deck_id: string): Promise<Card[]> {
 
-    const cardsToBeDraw = await this.getCardsToDraw(amountToBeDraw, deckId);
+
+    const cardsToBeDraw = await this.getCardsToDraw(amountToBeDraw, deck_id);
 
     await Promise.all(
       cardsToBeDraw.map((card) => {
@@ -26,9 +26,9 @@ export class CardRepository extends DefaultCrudRepository<Card,
     return cardsToBeDraw;
   }
 
-  private async getCardsToDraw(amountToBeDraw: number, deckId: string) {
+  private async getCardsToDraw(amountToBeDraw: number, deck_id: string) {
     const deckCards = await super.find({
-      where: {deck_id: deckId, drawn: false},
+      where: {deck_id: deck_id, drawn: false},
       order: ['id']
     });
     return deckCards.slice(0, amountToBeDraw);

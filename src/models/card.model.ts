@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
@@ -36,7 +37,7 @@ export class Card extends Entity {
   @property({
     type: 'string',
   })
-  deckId?: string;
+  deck_id?: string;
   // Define well-known properties here
 
   // Indexer property to allow additional data

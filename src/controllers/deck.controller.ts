@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {repository} from "@loopback/repository";
 import {DeckRepository} from "../repositories";
 import {post, get, requestBody, Response, RestBindings, param} from "@loopback/rest";
@@ -23,10 +24,10 @@ export class DeckController {
 
   @get('/decks/{id}')
   async get(
-    @param.path.string('id') deckId: string
+    @param.path.string('id') deck_id: string
   ): Promise<Deck> {
 
-    const deck = await this.deckRepository.findById(deckId);
+    const deck = await this.deckRepository.findById(deck_id);
     this.response.status(200);
     return deck;
   }

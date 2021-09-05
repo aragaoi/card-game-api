@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {HttpErrors, param, post, Response, RestBindings} from "@loopback/rest";
 import {Card} from "../models";
 import {repository} from "@loopback/repository";
@@ -13,29 +14,29 @@ export class CardController {
   ) {
   }
 
-  @post('/decks/{deckId}/drawn-cards')
+  @post('/decks/{deck_id}/drawn-cards')
   async draw(
-    @param.path.string('deckId') deckId: string,
+    @param.path.string('deck_id') deck_id: string,
     @param.query.number('count') amountToBeDraw: number
   ): Promise<Card[]> {
 
-    await this.validate(deckId, amountToBeDraw);
+    await this.validate(deck_id, amountToBeDraw);
 
-    const drawnCards: Card[] = await this.cardRepository.draw(amountToBeDraw, deckId);
+    const drawnCards: Card[] = await this.cardRepository.draw(amountToBeDraw, deck_id);
     this.response.status(200);
     return drawnCards;
   }
 
-  private async validate(deckId: string, amountToBeDraw: number) {
+  private async validate(deck_id: string, amountToBeDraw: number) {
     if (!amountToBeDraw) {
       throw new HttpErrors.BadRequest('Provide a "count" query parameter to define how many cards to draw.')
     }
 
-    if (!validate(deckId)) {
+    if (!validate(deck_id)) {
       throw new HttpErrors.BadRequest('The deck id should be a valid UUID.');
     }
 
-    if (!(await this.deckRepository.exists(deckId))) {
+    if (!(await this.deckRepository.exists(deck_id))) {
       throw new HttpErrors.NotFound;
     }
   }
