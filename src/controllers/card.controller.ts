@@ -18,13 +18,15 @@ export class CardController {
   async draw(
     @param.path.string('deck_id') deck_id: string,
     @param.query.number('count') amountToBeDraw: number
-  ): Promise<Card[]> {
+  ): Promise<{ cards: Card[] }> {
 
     await this.validate(deck_id, amountToBeDraw);
 
     const drawnCards: Card[] = await this.cardRepository.draw(amountToBeDraw, deck_id);
     this.response.status(200);
-    return drawnCards;
+    return {
+      cards: drawnCards.map(({value, suit, code}) => (new Card({value, suit, code})))
+    };
   }
 
   private async validate(deck_id: string, amountToBeDraw: number) {

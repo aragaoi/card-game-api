@@ -30,9 +30,9 @@ export class Card extends Entity {
 
   @property({
     type: 'boolean',
-    required: true,
+    default: false,
   })
-  drawn: boolean;
+  drawn?: boolean;
 
   @property({
     type: 'string',

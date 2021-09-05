@@ -42,9 +42,9 @@ describe('CardController', () => {
             code: "AS"
           },
           {
-            value: "KING",
-            suit: "HEARTS",
-            code: "KH"
+            value: "2",
+            suit: "SPADES",
+            code: "2S"
           }
         ]
       });

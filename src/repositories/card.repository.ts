@@ -20,7 +20,7 @@ export class CardRepository extends DefaultCrudRepository<Card,
 
     await Promise.all(
       cardsToBeDraw.map((card) => {
-        return super.update({...card, drawn: true} as Card);
+        return this.update(new Card({...card, drawn: true}));
       })
     );
     return cardsToBeDraw;
