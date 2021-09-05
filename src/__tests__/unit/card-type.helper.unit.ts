@@ -1,9 +1,23 @@
-import {expect} from "@loopback/testlab";
-import {buildCardDeck} from "../../helpers/card-type.helper";
-import {Card} from "../../models";
+import {expect} from '@loopback/testlab';
+import {buildCardDeck} from '../../helpers/card-type.helper';
+import {Card} from '../../models';
 
 const frenchCardSuits = ['SPADES', 'CLUBS', 'DIAMONDS', 'HEARTS'];
-const frenchCardsValues = ['ACE', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'VALET', 'DAME', 'KING'];
+const frenchCardsValues = [
+  'ACE',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  'VALET',
+  'DAME',
+  'KING',
+];
 
 describe('CardTypeHelper.buildCardDeck', () => {
   describe('default type', () => {
@@ -20,10 +34,11 @@ describe('CardTypeHelper.buildCardDeck', () => {
       frenchCardSuits.forEach(suit =>
         frenchCardsValues.forEach(value => {
           it(`should have one ${value} ${suit} card`, () => {
-            expect(cards?.filter(card => card.suit === suit && card.value === value))
-              .length(1);
+            expect(
+              cards?.filter(card => card.suit === suit && card.value === value),
+            ).length(1);
           });
-        })
+        }),
       );
     });
   });

@@ -9,7 +9,7 @@ export class Deck extends Entity {
     generated: false,
     required: true,
   })
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   deck_id: string;
 
   @property({
