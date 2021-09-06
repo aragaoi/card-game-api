@@ -1,18 +1,16 @@
 # card-game-api
 
-This application is generated using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) with the
-[initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
+An API to handle decks and cards to be used in any card game.
 
 ## Install dependencies
 
-By default, dependencies were installed when this application was generated.
-Whenever dependencies in `package.json` are changed, run the following command:
+To install all necessary dependencies for this application, execute:
 
 ```sh
 npm install
 ```
 
-To only install resolved dependencies in `package-lock.json`:
+To only install resolved dependencies in `package-lock.json`, execute:
 
 ```sh
 npm ci
@@ -20,15 +18,67 @@ npm ci
 
 ## Run the application
 
+You can run the application inside a Docker container or directly in the host environment.
+
+### With Docker
+
+To run inside a container (it needs the [Docker](https://www.docker.com/) properly installed on the environment),
+execute the following commands:
+
+- `npm run docker:build`: Build a Docker image for this application
+- `npm run docker:run`: Run this application inside a Docker container
+
+### Without Docker
+
+To run in the host, execute:
+
 ```sh
 npm start
 ```
 
 You can also run `node .` to skip the build step.
 
-Open http://127.0.0.1:3000 in your browser.
+## API
 
-## Rebuild the project
+The application serves an API at http://localhost:3000.
+
+[Documentation on Postman](https://documenter.getpostman.com/view/8780242/U16gPSmz)
+
+The following methods are available.
+
+#### Ping
+
+`GET /ping`
+
+To verify if the API is running.
+
+#### Create a new Deck
+
+`POST /decks`
+
+Body:
+
+```
+{
+    "deck_id": "62814f64-68dc-42ad-9321-1eea62a72e9e", // UUID v4
+    "shuffled": false,
+    "remaining": 52
+}
+```
+
+#### Open a Deck
+
+`GET /decks/{deck_id}`
+
+#### Draw a card from a deck
+
+A `count` parameter needs to be provided.
+
+`POST /decks/{deck_id}/drawn-cards?count=2`
+
+## Other commands
+
+### Rebuild the project
 
 To incrementally build the project:
 
@@ -42,34 +92,14 @@ To force a full build by cleaning up cached artifacts:
 npm run rebuild
 ```
 
-## Fix code style and formatting issues
+### Run the tests
 
-```sh
-npm run lint
-```
-
-To automatically fix such issues:
-
-```sh
-npm run lint:fix
-```
-
-## Other useful commands
-
-- `npm run migrate`: Migrate database schemas for models
-- `npm run openapi-spec`: Generate OpenAPI spec into a file
-- `npm run docker:build`: Build a Docker image for this application
-- `npm run docker:run`: Run this application inside a Docker container
-
-## Tests
+To run the unit and acceptance (e2e) tests, execute the command:
 
 ```sh
 npm test
 ```
 
-## What's next
-
-Please check out [LoopBack 4 documentation](https://loopback.io/doc/en/lb4/) to
-understand how you can continue to add features to this application.
-
-[![LoopBack](https://github.com/loopbackio/loopback-next/raw/master/docs/site/imgs/branding/Powered-by-LoopBack-Badge-(blue)-@2x.png)](http://loopback.io/)
+This application was initially generated
+using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) starting from the
+[initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
