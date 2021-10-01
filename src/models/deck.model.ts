@@ -1,7 +1,7 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {Card} from './card.model';
 
-@model({settings: {strict: false}})
+@model({settings: {strict: true}})
 export class Deck extends Entity {
   @property({
     type: 'string',
@@ -26,10 +26,6 @@ export class Deck extends Entity {
   @hasMany(() => Card, {keyTo: 'deck_id'})
   cards: Card[];
   // Define well-known properties here
-
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [prop: string]: any;
 
   constructor(data?: Partial<Deck>) {
     super(data);
