@@ -1,4 +1,4 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Card} from './card.model';
 
 @model({settings: {strict: true}})
@@ -7,19 +7,21 @@ export class Deck extends Entity {
     type: 'string',
     id: true,
     generated: false,
-    required: true,
+    defaultFn: 'uuidv4',
   })
   // eslint-disable-next-line @typescript-eslint/naming-convention
   deck_id: string;
 
   @property({
     type: 'boolean',
-    required: true,
+    required: false,
+    default: false,
   })
   shuffled: boolean;
 
   @property({
     type: 'number',
+    default: 52
   })
   remaining?: number;
 

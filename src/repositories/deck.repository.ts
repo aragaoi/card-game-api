@@ -1,28 +1,17 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {inject, Getter} from '@loopback/core';
-import {
-  DefaultCrudRepository,
-  repository,
-  HasManyRepositoryFactory,
-} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyRepositoryFactory, repository,} from '@loopback/repository';
 import {LocaldbDataSource} from '../datasources';
-import {Deck, DeckRelations, Card} from '../models';
-import {v4 as uuidv4} from 'uuid';
+import {Card, Deck, DeckRelations} from '../models';
 import {CardRepository} from './card.repository';
 import {buildCardDeck} from '../helpers/card-type.helper';
 import {shuffle} from '../helpers/array.helper';
 
-export class DeckRepository extends DefaultCrudRepository<
-  Deck,
+export class DeckRepository extends DefaultCrudRepository<Deck,
   typeof Deck.prototype.deck_id,
-  DeckRelations
-> {
-  private readonly defaultDeckProps: Omit<Deck, 'deck_id'>;
-
-  public readonly cards: HasManyRepositoryFactory<
-    Card,
-    typeof Deck.prototype.deck_id
-  >;
+  DeckRelations> {
+  public readonly cards: HasManyRepositoryFactory<Card,
+    typeof Deck.prototype.deck_id>;
 
   constructor(
     @inject('datasources.localdb') dataSource: LocaldbDataSource,
@@ -35,25 +24,16 @@ export class DeckRepository extends DefaultCrudRepository<
       cardRepositoryGetter,
     );
     this.registerInclusionResolver('cards', this.cards.inclusionResolver);
-    this.defaultDeckProps = {
-      shuffled: false,
-      remaining: 52,
-    };
   }
 
-  async create(deck: Omit<Deck, 'deck_id'> | undefined) {
-    const filledDeck = {
-      ...this.defaultDeckProps,
-      ...deck,
-      deck_id: deck?.deck_id ?? uuidv4(),
-    };
-    const createdDeck = await super.create(filledDeck);
+  async create(deck: Partial<Deck>): Promise<Deck> {
+    const createdDeck = await super.create(deck);
 
     await this.createDeckCards(createdDeck);
     return createdDeck;
   }
 
-  private async createDeckCards({deck_id, remaining, shuffled}: Deck) {
+  private async createDeckCards({deck_id, remaining, shuffled}: Deck): Promise<void> {
     let cards = buildCardDeck();
     if (shuffled) {
       cards = shuffle(cards);
