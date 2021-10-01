@@ -40,7 +40,10 @@ export class CardController {
     );
   }
 
-  private async getCardsToDraw(amountToBeDraw: number, deckId: string): Promise<Card[]> {
+  private async getCardsToDraw(
+    amountToBeDraw: number,
+    deckId: string,
+  ): Promise<Card[]> {
     const deckCards = await this.cardRepository.find({
       where: {deck_id: deckId, drawn: false},
       order: ['id'],
@@ -59,7 +62,10 @@ export class CardController {
     await this.deckRepository.update(deck);
   }
 
-  private async validateDraw(deckId: string, amountToBeDraw: number): Promise<void> {
+  private async validateDraw(
+    deckId: string,
+    amountToBeDraw: number,
+  ): Promise<void> {
     if (!deckId || !validate(deckId)) {
       throw new HttpErrors.BadRequest('The deck id should be a valid UUID.');
     }
@@ -86,9 +92,7 @@ export class CardController {
         );
       }
     } else {
-      throw new HttpErrors.BadRequest(
-        'This deck has no remaining cards.',
-      );
+      throw new HttpErrors.BadRequest('This deck has no remaining cards.');
     }
   }
 }

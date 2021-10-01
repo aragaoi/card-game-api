@@ -1,7 +1,7 @@
 /*
-* Implementation of the Durstenfeld shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm)
-* Source: https://stackoverflow.com/a/12646864
-* */
+ * Implementation of the Durstenfeld shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm)
+ * Source: https://stackoverflow.com/a/12646864
+ * */
 export const shuffle = <T>(array: T[]): T[] => {
   const arrayCopy = [...array];
   for (let i = arrayCopy.length - 1; i > 0; i--) {

@@ -21,7 +21,7 @@ export class Deck extends Entity {
 
   @property({
     type: 'number',
-    default: 52
+    default: 52,
   })
   remaining?: number;
 

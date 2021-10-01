@@ -1,22 +1,31 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {repository} from '@loopback/repository';
 import {DeckRepository} from '../repositories';
-import {get, HttpErrors, param, post, requestBody, Response, RestBindings,} from '@loopback/rest';
+import {
+  get,
+  HttpErrors,
+  param,
+  post,
+  requestBody,
+  Response,
+  RestBindings,
+} from '@loopback/rest';
 import {Card, Deck} from '../models';
 import {inject} from '@loopback/core';
-import {buildCardDeck} from "../helpers/card-type.helper";
-import {shuffle} from "../helpers/array.helper";
-import {validate} from "uuid";
+import {buildCardDeck} from '../helpers/card-type.helper';
+import {shuffle} from '../helpers/array.helper';
+import {validate} from 'uuid';
 
 export class DeckController {
   constructor(
     @repository(DeckRepository) public deckRepository: DeckRepository,
     @inject(RestBindings.Http.RESPONSE) protected response: Response,
-  ) {
-  }
+  ) {}
 
   @post('/decks')
-  async create(@requestBody() deck: Omit<Deck, 'deck_id' | 'cards'>): Promise<Deck> {
+  async create(
+    @requestBody() deck: Omit<Deck, 'deck_id' | 'cards'>,
+  ): Promise<Deck> {
     const deckCards = buildCardDeck();
 
     this.validateCreate(deck, deckCards.length);
@@ -37,7 +46,10 @@ export class DeckController {
       include: [
         {
           relation: 'cards',
-          scope: {fields: ['value', 'suit', 'code', 'deck_id'], where: {drawn: false}},
+          scope: {
+            fields: ['value', 'suit', 'code', 'deck_id'],
+            where: {drawn: false},
+          },
         },
       ],
     });
@@ -45,7 +57,10 @@ export class DeckController {
     return deck;
   }
 
-  private async createDeckCards({deck_id, shuffled, remaining}: Deck, cards: Card[]): Promise<void> {
+  private async createDeckCards(
+    {deck_id, shuffled, remaining}: Deck,
+    cards: Card[],
+  ): Promise<void> {
     if (shuffled) {
       cards = shuffle(cards);
     }
@@ -55,7 +70,10 @@ export class DeckController {
     );
   }
 
-  private validateCreate({deck_id: deckId, remaining, cards}: Partial<Deck>, maxCards: number): void {
+  private validateCreate(
+    {deck_id: deckId, remaining, cards}: Partial<Deck>,
+    maxCards: number,
+  ): void {
     this.validateDeckId(deckId);
 
     const minCards = 0;
@@ -72,7 +90,9 @@ export class DeckController {
     }
 
     if (cards?.length) {
-      throw new HttpErrors.BadRequest('The cards are not allowed at the deck creation.');
+      throw new HttpErrors.BadRequest(
+        'The cards are not allowed at the deck creation.',
+      );
     }
   }
 

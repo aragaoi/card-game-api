@@ -28,7 +28,7 @@ describe('CardController', () => {
         remaining: 3,
       });
       await cardRepository.createAll(
-        fakeCards().map((card) => ({...card, deck_id: deck.deck_id})),
+        fakeCards().map(card => ({...card, deck_id: deck.deck_id})),
       );
     });
 

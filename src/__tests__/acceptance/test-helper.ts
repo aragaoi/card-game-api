@@ -29,20 +29,20 @@ export async function setupApplication(): Promise<AppWithClient> {
 export function fakeCards() {
   return [
     {
-      code: "AS",
-      suit: "SPADES",
-      value: "ACE",
+      code: 'AS',
+      suit: 'SPADES',
+      value: 'ACE',
     },
     {
-      code: "2S",
-      suit: "SPADES",
-      value: "2",
+      code: '2S',
+      suit: 'SPADES',
+      value: '2',
     },
     {
-      code: "3S",
-      suit: "SPADES",
-      value: "3",
-    }
+      code: '3S',
+      suit: 'SPADES',
+      value: '3',
+    },
   ];
 }
 
