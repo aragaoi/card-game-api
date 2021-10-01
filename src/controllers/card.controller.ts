@@ -15,14 +15,14 @@ export class CardController {
 
   @post('/decks/{deck_id}/drawn-cards')
   async draw(
-    @param.path.string('deck_id') deck_id: string,
+    @param.path.string('deck_id') deckId: string,
     @param.query.number('count') amountToBeDraw: number,
   ): Promise<{cards: Card[]}> {
-    await this.validate(deck_id, amountToBeDraw);
+    await this.validateDraw(deckId, amountToBeDraw);
 
-    const cardsToBeDraw = await this.getCardsToDraw(amountToBeDraw, deck_id);
+    const cardsToBeDraw = await this.getCardsToDraw(amountToBeDraw, deckId);
     await this.drawCards(cardsToBeDraw);
-    await this.updateRemainingCardsOnDeck(deck_id, amountToBeDraw);
+    await this.updateRemainingCardsOnDeck(deckId, amountToBeDraw);
 
     this.response.status(200);
     return {
@@ -32,7 +32,7 @@ export class CardController {
     };
   }
 
-  private async drawCards(cardsToBeDraw: Card[]) {
+  private async drawCards(cardsToBeDraw: Card[]): Promise<void> {
     await Promise.all(
       cardsToBeDraw.map(card => {
         return this.cardRepository.update(new Card({...card, drawn: true}));
@@ -40,38 +40,55 @@ export class CardController {
     );
   }
 
-  private async getCardsToDraw(amountToBeDraw: number, deck_id: string) {
+  private async getCardsToDraw(amountToBeDraw: number, deckId: string): Promise<Card[]> {
     const deckCards = await this.cardRepository.find({
-      where: {deck_id: deck_id, drawn: false},
+      where: {deck_id: deckId, drawn: false},
       order: ['id'],
     });
     return deckCards.slice(0, amountToBeDraw);
   }
 
   private async updateRemainingCardsOnDeck(
-    deck_id: string,
+    deckId: string,
     amountToBeDraw: number,
-  ) {
-    const deck = await this.deckRepository.findById(deck_id);
+  ): Promise<void> {
+    const deck = await this.deckRepository.findById(deckId);
     const {remaining = 0} = deck;
     deck.remaining =
       remaining > amountToBeDraw ? remaining - amountToBeDraw : 0;
     await this.deckRepository.update(deck);
   }
 
-  private async validate(deck_id: string, amountToBeDraw: number) {
+  private async validateDraw(deckId: string, amountToBeDraw: number): Promise<void> {
+    if (!deckId || !validate(deckId)) {
+      throw new HttpErrors.BadRequest('The deck id should be a valid UUID.');
+    }
+
+    const deck = await this.deckRepository.findById(deckId);
+    if (!deck) {
+      throw new HttpErrors.NotFound();
+    }
+
     if (!amountToBeDraw) {
       throw new HttpErrors.BadRequest(
         'Provide a "count" query parameter to define how many cards to draw.',
       );
     }
 
-    if (!validate(deck_id)) {
-      throw new HttpErrors.BadRequest('The deck id should be a valid UUID.');
-    }
-
-    if (!(await this.deckRepository.exists(deck_id))) {
-      throw new HttpErrors.NotFound();
+    if (deck?.remaining) {
+      if (
+        !Number.isInteger(amountToBeDraw) ||
+        amountToBeDraw < 1 ||
+        amountToBeDraw > deck.remaining
+      ) {
+        throw new HttpErrors.BadRequest(
+          `The "count" parameter should be an integer between 1 and ${deck.remaining}.`,
+        );
+      }
+    } else {
+      throw new HttpErrors.BadRequest(
+        'This deck has no remaining cards.',
+      );
     }
   }
 }
