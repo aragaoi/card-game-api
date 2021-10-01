@@ -1,18 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {repository} from '@loopback/repository';
 import {DeckRepository} from '../repositories';
-import {
-  post,
-  get,
-  requestBody,
-  Response,
-  RestBindings,
-  param,
-} from '@loopback/rest';
+import {get, HttpErrors, param, post, requestBody, Response, RestBindings,} from '@loopback/rest';
 import {Card, Deck} from '../models';
 import {inject} from '@loopback/core';
 import {buildCardDeck} from "../helpers/card-type.helper";
 import {shuffle} from "../helpers/array.helper";
+import {validate} from "uuid";
 
 export class DeckController {
   constructor(
@@ -22,8 +16,10 @@ export class DeckController {
   }
 
   @post('/decks')
-  async create(@requestBody() deck: Omit<Deck, 'deck_id'>): Promise<Deck> {
+  async create(@requestBody() deck: Omit<Deck, 'deck_id' | 'cards'>): Promise<Deck> {
     const deckCards = buildCardDeck();
+
+    this.validateCreate(deck, deckCards.length);
 
     deck.remaining = deck?.remaining ?? deckCards.length;
     const createdDeck = await this.deckRepository.create(deck);
@@ -34,8 +30,10 @@ export class DeckController {
   }
 
   @get('/decks/{id}')
-  async get(@param.path.string('id') deck_id: string): Promise<Deck> {
-    const deck = await this.deckRepository.findById(deck_id, {
+  async get(@param.path.string('id') deckId: string): Promise<Deck> {
+    this.validateDeckId(deckId);
+
+    const deck = await this.deckRepository.findById(deckId, {
       include: [
         {
           relation: 'cards',
@@ -55,5 +53,32 @@ export class DeckController {
     await Promise.all(
       cards.map(card => this.deckRepository.cards(deck_id).create(card), this),
     );
+  }
+
+  private validateCreate({deck_id: deckId, remaining, cards}: Partial<Deck>, maxCards: number): void {
+    this.validateDeckId(deckId);
+
+    const minCards = 0;
+    if (remaining) {
+      if (
+        !Number.isInteger(remaining) ||
+        remaining < minCards ||
+        remaining > maxCards
+      ) {
+        throw new HttpErrors.BadRequest(
+          `The "remaining" attribute should be an integer between ${minCards} and ${maxCards}.`,
+        );
+      }
+    }
+
+    if (cards?.length) {
+      throw new HttpErrors.BadRequest('The cards are not allowed at the deck creation.');
+    }
+  }
+
+  private validateDeckId(deckId: string | undefined): void {
+    if (deckId && !validate(deckId)) {
+      throw new HttpErrors.BadRequest('The deck id should be a valid UUID.');
+    }
   }
 }
