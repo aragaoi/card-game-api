@@ -26,6 +26,26 @@ export async function setupApplication(): Promise<AppWithClient> {
   return {app, client};
 }
 
+export function fakeCards() {
+  return [
+    {
+      code: "AS",
+      suit: "SPADES",
+      value: "ACE",
+    },
+    {
+      code: "2S",
+      suit: "SPADES",
+      value: "2",
+    },
+    {
+      code: "3S",
+      suit: "SPADES",
+      value: "3",
+    }
+  ];
+}
+
 export interface AppWithClient {
   app: CardGameApiApplication;
   client: Client;

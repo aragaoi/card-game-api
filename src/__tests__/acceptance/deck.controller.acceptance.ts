@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {Client, expect} from '@loopback/testlab';
 import {CardGameApiApplication} from '../..';
-import {setupApplication} from './test-helper';
-import {DeckRepository} from '../../repositories';
+import {fakeCards, setupApplication} from './test-helper';
+import {CardRepository, DeckRepository} from '../../repositories';
 
 const uuidPattern = new RegExp(
   /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
@@ -12,10 +12,12 @@ describe('DeckController', () => {
   let app: CardGameApiApplication;
   let client: Client;
   let deckRepository: DeckRepository;
+  let cardRepository: CardRepository;
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
     deckRepository = await app.getRepository(DeckRepository);
+    cardRepository = await app.getRepository(CardRepository);
   });
 
   after(async () => {
@@ -58,11 +60,14 @@ describe('DeckController', () => {
 
   describe('GET /decks', () => {
     before('populate decks', async () => {
-      await deckRepository.create({
+      const deck = await deckRepository.create({
         deck_id: 'c64fb35c-f117-4219-a921-131c3bbd5857',
         shuffled: false,
         remaining: 3,
       });
+      await cardRepository.createAll(
+        fakeCards().map((card) => ({...card, deck_id: deck.deck_id})),
+      );
     });
 
     it('should return the specified deck', async () => {
@@ -93,7 +98,7 @@ describe('DeckController', () => {
       await client
         .get(`/decks/${deckUUID}`)
         .expect('Content-Type', /json/)
-        .expect(404);
+        .expect(400);
     });
   });
 });

@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {Client, expect} from '@loopback/testlab';
 import {CardGameApiApplication} from '../..';
-import {setupApplication} from './test-helper';
-import {DeckRepository} from '../../repositories';
+import {fakeCards, setupApplication} from './test-helper';
+import {CardRepository, DeckRepository} from '../../repositories';
 
 describe('CardController', () => {
   let app: CardGameApiApplication;
   let client: Client;
   let deckRepository: DeckRepository;
+  let cardRepository: CardRepository;
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
     deckRepository = await app.getRepository(DeckRepository);
+    cardRepository = await app.getRepository(CardRepository);
   });
 
   after(async () => {
@@ -20,11 +22,14 @@ describe('CardController', () => {
 
   describe('POST /decks/:deck_id/drawn-cards', () => {
     before('populate decks', async () => {
-      await deckRepository.create({
+      const deck = await deckRepository.create({
         deck_id: 'd83db9ec-feff-4afb-8fd0-5c1c5b23cdd4',
         shuffled: false,
         remaining: 3,
       });
+      await cardRepository.createAll(
+        fakeCards().map((card) => ({...card, deck_id: deck.deck_id})),
+      );
     });
 
     it('should draw the specified amount of cards', async () => {
