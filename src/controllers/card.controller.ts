@@ -20,19 +20,32 @@ export class CardController {
   ): Promise<{cards: Card[]}> {
     await this.validate(deck_id, amountToBeDraw);
 
-    const drawnCards: Card[] = await this.cardRepository.draw(
-      amountToBeDraw,
-      deck_id,
-    );
-
+    const cardsToBeDraw = await this.getCardsToDraw(amountToBeDraw, deck_id);
+    await this.drawCards(cardsToBeDraw);
     await this.updateRemainingCardsOnDeck(deck_id, amountToBeDraw);
 
     this.response.status(200);
     return {
-      cards: drawnCards.map(
+      cards: cardsToBeDraw.map(
         ({value, suit, code}) => new Card({value, suit, code}),
       ),
     };
+  }
+
+  private async drawCards(cardsToBeDraw: Card[]) {
+    await Promise.all(
+      cardsToBeDraw.map(card => {
+        return this.cardRepository.update(new Card({...card, drawn: true}));
+      }, this),
+    );
+  }
+
+  private async getCardsToDraw(amountToBeDraw: number, deck_id: string) {
+    const deckCards = await this.cardRepository.find({
+      where: {deck_id: deck_id, drawn: false},
+      order: ['id'],
+    });
+    return deckCards.slice(0, amountToBeDraw);
   }
 
   private async updateRemainingCardsOnDeck(
